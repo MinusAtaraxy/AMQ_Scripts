@@ -3,7 +3,7 @@
 // @namespace    https://github.com/MinusAtaraxy
 // @version      1.1+1.0
 // @description  Adds timestamps to chat messages
-// @author       TheJoseph98
+// @author       TheJoseph98 (edited by Ataraxia)
 // @match        https://animemusicquiz.com/*
 // @grant        none
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
@@ -33,7 +33,7 @@ let gameChatObserver = new MutationObserver(mutations => {
 
 
             $(node).prepend($(`<span class="gcTimestamp" style="opacity: 0.5;">` + songnumber +`</span>`)).popover({
-                placement: "auto",
+                placement: "left",
                 content: timeFormat,
                 trigger: "hover",
                 container: "body",
