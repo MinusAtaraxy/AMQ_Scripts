@@ -24,9 +24,10 @@ let gameChatObserver = new MutationObserver(mutations => {
             if ($(node).hasClass("ps__scrollbar-y-rail")) return;
             if ($(node).hasClass("ps__scrollbar-x-rail")) return;
                         let d = new Date();
+                        let secs = d.getSeconds() < 10 ? "0" + d.getSeconds() : d.getSeconds();
                         let mins = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
                         let hours = d.getHours() < 10 ? "0" + d.getHours() : d.getHours();
-                        let timeFormat = hours + ":" + mins;
+                        let timeFormat = hours + ":" + mins + ":" + secs;
             let songnumber = "";
             if (!lobby.inLobby){
             songnumber = $("#qpCurrentSongCount").text();}
