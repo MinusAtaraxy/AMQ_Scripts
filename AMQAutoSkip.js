@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Auto-Skip
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      0.1
+// @version      0.1+0.01
 // @description  afk auto skip
 // @author       Ataraxia
 // @match        https://animemusicquiz.com/*
@@ -23,7 +23,7 @@ let doSkip = false;
     if(lobby.inLobby || lobby.isSpectator || quiz.gameMode === "Ranked") return;
     $("#qpAnswerInputContainer")
            .append($(`<div class ="" id="qpSkipContainer" style="transform: translateX(-100%);
-	transition: transform 0.5s ease-out;"></div>`)
+	transition: transform 0.5s ease-out;width: 60px;"></div>`)
         .append($(`<div class="qpSkipSection" style="
 
 	border-top-left-radius: 10px;
@@ -61,11 +61,11 @@ function toggleAutoSkip() {
 doSkip = !doSkip;
     quiz.skipClicked();
     //debug
-if(doSkip) gameChat.systemMessage("skip!");
+if(doSkip) gameChat.systemMessage("skip on!");
 }
 
 function AutoSkip(){
 setTimeout(() => { quiz.skipClicked(); }, 100);
 
-        gameChat.systemMessage("skipped!");
+        gameChat.systemMessage("skipped!!");
 }
