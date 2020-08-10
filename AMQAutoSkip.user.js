@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Auto-Skip
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      0.1 + 0.2 (Not)
+// @version      0.1 + 0.3 (Not)
 // @description  afk auto skip
 // @author       Ataraxia
 // @match        https://animemusicquiz.com/*
@@ -25,7 +25,7 @@ let doSkip = false;
     if(lobby.inLobby || lobby.isSpectator || quiz.gameMode === "Ranked") return;
     $("#qpSkipContainer")
            .append($(`<div id="qpAutoSkipContainer"></div>`)
-        .append($(`<div id="qpAutoSkipSection" class="qpSkipSection"></div>`)
+        .append($(`<div id="qpAutoSkipSection"></div>`)
                 .append($(`<div class="customCheckbox"></div>`)
                         .append($(`<input id="slAFK" type="checkbox">`)
                                 .click(function () {
@@ -62,38 +62,29 @@ setTimeout(() => { quiz.skipClicked(); }, 100);
 
 GM_addStyle(`
 #qpAutoSkipContainer {
-    overflow: hidden;
-	width: 150px;
-	z-index: -1;
 	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
 	height: 100%;
-	pointer-events: none;
-
+	width: 60px;
+    transform: translateX(-110%)
 }
-
 #qpAutoSkipSection {
-	float: left;
-	border-top-left-radius: 10px;
-	border-bottom-left-radius: 10px;
+	height: 100%;
+	line-height: 1;
+	padding-top: 7px;
+    display: none;
 	text-align: center;
-	width: 114px;
-	padding-left: 30px;
-	overflow: hidden;
-	transform: translateX(-110%);
-	transition: transform 0.5s ease-out;
-	background-color: #424242;
-	-webkit-box-shadow: 0 0 5px rgb(0, 0, 0);
-	box-shadow: 0 0 5px rgb(0, 0, 0);
-	pointer-events: initial;
 }
 
-#qpSkipContainer:hover #qpAutoSkipSection {
-	 z-index: 10;
+#qpAutoSkipContainer:hover #qpAutoSkipSection {
+  display: block;
 
 }
 
 #qpAutoSkipSection > p {
-	padding-left: 18px;
+
 }
 
 `);
