@@ -15,7 +15,8 @@ if (document.getElementById('startPage')) {
     return
 }
 
-//debug menu
+let urlLink = "https://aggie.io/_virett0a_";
+
 (function() {
     $("#footerMenuBarBackground")
         .append($(`<div  id="qpCommandsContainer" style="position: absolute;
@@ -49,7 +50,7 @@ sendChatMessage("To remove list: Settings > Anime List > Delete your username > 
                            .append($(`<div class="customCheckbox"></div>`)
                         .append($(`<input id="slLink" type="checkbox">`)
                                 .click(function () {
-sendChatMessage("Picture Link Here: https://aggie.io/_virett0a_");
+sendChatMessage("Picture Link Here:" + urlLink);
     })
                                )
                         .append(`<label for="slLink"><i class="fa fa-check" aria-hidden="true"></i></label>`)
@@ -73,6 +74,13 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
     else if (payload.message.startsWith("/list")) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
+    else if (payload.message.startsWith("/link")) {
+        sendChatMessage(urlLink);
+    }
+    else if (payload.message.startsWith("/relink")) {
+        let args = payload.message.split(/\s+/);
+        if (args[1] !== undefined) urlLink = args[1].trim();
+    }
     else if (payload.message.search(/list/i)!==-1 && payload.message.search(/remove/i)!==-1&& payload.message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
@@ -90,7 +98,7 @@ new Listener("New Player", function(){
 }).bindListener();
 
 new Listener("New Spectator", function (spectator) {
-	sendChatMessage("Welcome to Pictionary! View drawing here https://aggie.io/_virett0a_");
+	sendChatMessage("Welcome to Pictionary! View drawing here:" + urlLink);
 }).bindListener();
 
 new Listener("Spectator Change To Player", function(){
