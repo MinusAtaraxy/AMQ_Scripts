@@ -1,15 +1,13 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.4.1 i guess
+// @version      1.5 beta
 // @description  auto say rules/instuctions/links for the custom game pictionary
-// @author       Ataraxia
+// @author       Ataraxy
 // @match        https://animemusicquiz.com/*
 // @grant        none
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
 // ==/UserScript==
-
-
 
 if (!window.setupDocumentDone) return;
 
@@ -18,9 +16,9 @@ if (document.getElementById('startPage')) {
 }
 
 let urlLink = "_virett0a_";
+let roomsize = 0;
 
-//debugging stuff
-/*
+//DEBUG
 (function() {
     $("#footerMenuBarBackground")
         .append($(`<div  id="qpCommandsContainer" style="position: absolute;
@@ -65,14 +63,14 @@ sendChatMessage("Picture Link Here: https://aggie.io/" + urlLink);
 
 
 })();
-*/
 
 
 
+//might change else if( >> cases using .trim
 let commandListener = new Listener("Game Chat Message", (payload) => {
-    if (payload.message.startsWith("/rules")) {
+    if (payload.message.startsWith("/rules") || payload.message.startsWith("/help")) {
 
-        sendChatMessage("!!This is a custom gamemode!! Please remove your list and mute your sound, then guess the anime based on drawings.");
+        sendChatMessage("𝗧𝗵𝗶𝘀 𝗶𝘀 𝗮 𝗰𝘂𝘀𝘁𝗼𝗺 𝗴𝗮𝗺𝗲𝗺𝗼𝗱𝗲!! Please 𝗿𝗲𝗺𝗼𝘃𝗲 𝘆𝗼𝘂𝗿 𝗹𝗶𝘀𝘁 and 𝗺𝘂𝘁𝗲 your sound, then guess the anime based on drawings.");
         sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");
     }
     else if (payload.message.startsWith("/list")) {
@@ -99,32 +97,50 @@ document.getElementById("mainContainer").click();
 });
 
 new Listener("New Player", function(payload){
-
+    let newroomsize = getSizeofPlayers();
+    if (newroomsize > roomsize){
     sendChatMessage("Welcome to Pictionary!");
     sendChatMessage("!!This is a custom gamemode!! Please remove your list and mute your sound, then guess the anime based on drawings.");
     sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");
-
+    roomsize = newroomsize;
+    }
 }).bindListener();
 
 new Listener("New Spectator", function (payload) {
-
 	sendChatMessage("Welcome to Pictionary! View drawing here: https://aggie.io/" + urlLink);
-    
 
 }).bindListener();
 
 new Listener("Spectator Change To Player", function(){
+    let newroomsize = getSizeofPlayers();
+    if (newroomsize > roomsize){
     setTimeout(sendChatMessage("Don't forget to turn off list and sound ;)"), 10000);
+    roomsize = newroomsize;
+    }
+
 }).bindListener();
 
+let hostPromotionListner = new Listener("Host Promotion", (payload) => {
+	if (lobby.isHost) {
+        for (let playerID in quiz.players) {
+            lobby.promoteHost(quiz.players[playerID]._name)
+            break;
+        }
+        //add autopicker?
+    };
+}).bindListener();
 
 function sendChatMessage(message) {
     gameChat.$chatInputField.val(message);
     gameChat.sendMessage();
 }
 
-function initializePlayers() {
-
+function getSizeofPlayers() {
+let roomsizetest = [];
+    for (let playerID in quiz.players) {
+    roomsizetest.push(playerID)
+    }
+    return roomsizetest[roomsizetest.length-1];
 }
 
 commandListener.bindListener();
