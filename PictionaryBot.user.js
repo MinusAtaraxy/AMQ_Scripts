@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.5.2 beta
+// @version      1.5.4 beta
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -17,6 +17,7 @@ if (document.getElementById('startPage')) {
 
 let urlLink = "_virett0a_";
 let roomsize = 0;
+let StepHostisStuck = true;
 
 //DEBUG
 (function() {
@@ -84,6 +85,13 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
         if (args[1] !== undefined) urlLink = args[1].trim();
         sendChatMessage("new link: https://aggie.io/" + urlLink);
     }
+    else if (payload.message.startsWith("/host")) {
+        if (lobby.isHost) {
+            lobby.promoteHost(payload.sender);
+            //debug
+            console.log(payload.sender + "is host");
+        }
+    }
     else if (payload.message.search(/list/i)!==-1 && payload.message.search(/remove/i)!==-1&& payload.message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
@@ -126,14 +134,26 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
     setTimeout(() => {
 	if (lobby.isHost) {
         for (let playerID in lobby.players) {
-            lobby.promoteHost(lobby.players[playerID]._name);
+            if (lobby.players[playerID]._name !== selfName) lobby.promoteHost(lobby.players[playerID]._name);
         }
         //add autopicker?
     };},1);
+    //check if still host
+    if (lobby.isHost) {
+        if (StepHostisStuck) {
+            var hostremind = setInterval(function(){
+                if (lobby.isHost) {sendChatMessage("type /host to receive host")};
+            }, 13000);
+            StepHostisStuck = false;
+        };}
+    else{
+        clearInterval(hostremind);
+        StepHostisStuck = true;
+    }
 }).bindListener();
 
 let joinLobbyListener = new Listener("Join Game", (payload) => {
-    roomsize = getSizeofPlayers();
+    setTimeout(() => {roomsize = getSizeofPlayers();},1);
     //debug
     console.log("on join: " + roomsize);
 }).bindListener();
