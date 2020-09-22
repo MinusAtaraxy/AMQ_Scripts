@@ -130,6 +130,10 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
     };
 }).bindListener();
 
+let joinLobbyListener = new Listener("Join Game", (payload) => {
+    roomsize = getSizeofPlayers();
+}).bindListener();
+
 function sendChatMessage(message) {
     gameChat.$chatInputField.val(message);
     gameChat.sendMessage();
