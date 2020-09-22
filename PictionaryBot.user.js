@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.4 i guess
+// @version      1.4.1 i guess
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxia
 // @match        https://animemusicquiz.com/*
@@ -102,14 +102,14 @@ new Listener("New Player", function(payload){
 
     sendChatMessage("Welcome to Pictionary!");
     sendChatMessage("!!This is a custom gamemode!! Please remove your list and mute your sound, then guess the anime based on drawings.");
-    sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");}
+    sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");
 
 }).bindListener();
 
 new Listener("New Spectator", function (payload) {
 
 	sendChatMessage("Welcome to Pictionary! View drawing here: https://aggie.io/" + urlLink);
-    }
+    
 
 }).bindListener();
 
