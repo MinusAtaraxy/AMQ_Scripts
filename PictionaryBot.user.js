@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.5 beta
+// @version      1.5.2 beta
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -121,17 +121,21 @@ new Listener("Spectator Change To Player", function(){
 }).bindListener();
 
 let hostPromotionListner = new Listener("Host Promotion", (payload) => {
+    //debug
+    console.log("host change");
+    setTimeout(() => {
 	if (lobby.isHost) {
-        for (let playerID in quiz.players) {
-            lobby.promoteHost(quiz.players[playerID]._name)
-            break;
+        for (let playerID in lobby.players) {
+            lobby.promoteHost(lobby.players[playerID]._name);
         }
         //add autopicker?
-    };
+    };},1);
 }).bindListener();
 
 let joinLobbyListener = new Listener("Join Game", (payload) => {
     roomsize = getSizeofPlayers();
+    //debug
+    console.log("on join: " + roomsize);
 }).bindListener();
 
 function sendChatMessage(message) {
@@ -141,8 +145,14 @@ function sendChatMessage(message) {
 
 function getSizeofPlayers() {
 let roomsizetest = [];
-    for (let playerID in quiz.players) {
+    if (lobby.inLobby){
+    for (let playerID in lobby.players) {
     roomsizetest.push(playerID)
+    }}
+    else {
+      for (let playerID in quiz.players) {
+    roomsizetest.push(playerID)
+    }
     }
     return roomsizetest[roomsizetest.length-1];
 }
