@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.5.7 beta
+// @version      1.5.8 beta
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
 // @grant        none
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
+// @updateURL    https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/PictionaryBot.user.js
 // ==/UserScript==
 
 if (!window.setupDocumentDone) return;
@@ -17,42 +18,13 @@ if (document.getElementById('startPage')) {
 
 let urlLink = "_virett0a_";
 let roomsize = 0;
+let CurrentHost = "";
 let StepHostisStuck = true; //UwU what are you doing step-host?
-
+var choosePlayer = []
 
 
 let commandListener = new Listener("Game Chat Message", (payload) => {
-/*    if (payload.message.startsWith("/rules") || payload.message.startsWith("/help")) {
 
-        sendChatMessage("𝗧𝗵𝗶𝘀 𝗶𝘀 𝗮 𝗰𝘂𝘀𝘁𝗼𝗺 𝗴𝗮𝗺𝗲𝗺𝗼𝗱𝗲!! Please 𝗿𝗲𝗺𝗼𝘃𝗲 𝘆𝗼𝘂𝗿 𝗹𝗶𝘀𝘁 and 𝗺𝘂𝘁𝗲 your sound, then guess the anime based on drawings.");
-        sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");
-    }
-    else if (payload.message.startsWith("/list")) {
-        sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
-    }
-    else if (payload.message.startsWith("/link")) {
-        sendChatMessage("https://aggie.io/" + urlLink);
-    }
-    else if (payload.message.startsWith("/relink")) {
-        let args = payload.message.split(/\s+/);
-        if (args[1] !== undefined) urlLink = args[1].trim();
-        sendChatMessage("new link: https://aggie.io/" + urlLink);
-    }
-    else if (payload.message.startsWith("/host")) {
-        if (lobby.isHost) {
-            lobby.promoteHost(payload.sender);
-            //debug
-            console.log(payload.sender + "is host");
-        }
-    }
-    else if (payload.message.search(/list/i)!==-1 && payload.message.search(/remove/i)!==-1&& payload.message.search(/how/i)!==-1) {
-        sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
-    }
-
-    else {
-        //do nothing
-    }
-*/
     // is else-if better than Switch? guess I'll never know...
 
     if (payload.message.startsWith("/")) {
@@ -83,13 +55,25 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 console.log(payload.sender + "is host");
             }
             break;
-        case "/debug":
-            if(payload.sender === selfName || payload.sender === "Ataraxia"){
-                let temp = getSizeofPlayers();
-            console.log("roomsize = " + roomsize + " but is " + temp);
-            }
+//         case "/debug":
+//             if(payload.sender === selfName || payload.sender === "Ataraxia"){
+//                 let temp = getSizeofPlayers();
+//             console.log("roomsize = " + roomsize + " but is " + temp);
+//             }
+//             break;
+        case "/choose":
+            ChooseRandomPlayer();
             break;
-        case "/random": //do later....
+        case "/pass":
+            for (let playerID in lobby.players) {
+            if (lobby.players[playerID]._host) {
+                if (payload.sender == lobby.players[playerID]._name){
+                    choosePlayer[playerID].passcounter += 2;
+                    break;
+                }
+            }
+            }
+            ChooseRandomPlayer(payload.sender);
             break;
 
 //case "/":
@@ -97,7 +81,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
         default:
             //do nothing
     }
-    }else if (payload.message.search(/list/i)!==-1 && payload.message.search(/remove/i)!==-1&& payload.message.search(/how/i)!==-1) {
+    }else if (payload.message.search(/list/i)!==-1 && (payload.message.search(/remove/i) !==-1 || payload.message.search(/delete/i) !==-1 || payload.message.search(/disable/i) !==-1) && payload.message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
     //anti afk
@@ -111,6 +95,11 @@ new Listener("New Player", function(payload){
     sendChatMessage("Welcome to Pictionary!");
     sendChatMessage("!!This is a custom gamemode!! Please remove your list and mute your sound, then guess the anime based on drawings.");
     sendChatMessage("Full Rules: https://pastebin.com/HjSySq6e");
+        //create roblox account
+        choosePlayer[newroomsize] = {};
+            choosePlayer[newroomsize]._name = lobby.players[newroomsize]._name;
+            if (choosePlayer[newroomsize].hostcounter == undefined) choosePlayer[newroomsize].hostcounter = 0;
+            if (choosePlayer[newroomsize].passcounter == undefined) choosePlayer[newroomsize].passcounter = 0;
     roomsize = newroomsize;
     }},100);
 }).bindListener();
@@ -125,6 +114,11 @@ new Listener("Spectator Change To Player", function(){
     let newroomsize = getSizeofPlayers();
     if (newroomsize > roomsize){
     setTimeout(sendChatMessage("Don't forget to turn off list and sound ;)"), 10000);
+        //create roblox account
+        choosePlayer[newroomsize] = {};
+            choosePlayer[newroomsize]._name = lobby.players[newroomsize]._name;
+            if (choosePlayer[newroomsize].hostcounter == undefined) choosePlayer[newroomsize].hostcounter = 0;
+            if (choosePlayer[newroomsize].passcounter == undefined) choosePlayer[newroomsize].passcounter = 0;
     roomsize = newroomsize;
     }},100);
 
@@ -151,16 +145,57 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
     else{
         clearInterval(hostremind);
         StepHostisStuck = true;
+        //if it works...-_-
+        for (let playerID in lobby.players) {
+            if (lobby.players[playerID]._host) CurrentHost = lobby.players[playerID]._name;
+        }
     }
 }).bindListener();
 
 let joinLobbyListener = new Listener("Join Game", (payload) => {
     setTimeout(() => {
         roomsize = getSizeofPlayers();
-        console.log("on join: " + roomsize); //debug
+        //console.log("on join: " + roomsize); //debug
+
+        //Initialize
+        for (let playerID in lobby.players){
+            choosePlayer[playerID] = {};
+            choosePlayer[playerID]._name = lobby.players[playerID]._name;
+            if (choosePlayer[playerID].hostcounter == undefined) choosePlayer[playerID].hostcounter = 0;
+            if (choosePlayer[playerID].passcounter == undefined) choosePlayer[playerID].passcounter = 0;
+        }
     },100);
     roomsize = 0;
     StepHostisStuck = true;
+}).bindListener();
+
+let quizReadyListener = new Listener("quiz ready", (data) => {
+setTimeout(() => {
+for (let playerID in quiz.players){
+    if (quiz.players[playerID]._host){
+        if (quiz.players[playerID]._name !== CurrentHost){
+            CurrentHost = quiz.players[playerID]._name;
+            break;
+        }
+    }
+}
+},1000);
+}).bindListener();
+
+let quizOverListener = new Listener("quiz over", (data) => {
+setTimeout(() => {
+for (let playerID in quiz.players){
+    if (quiz.players[playerID]._host){
+        if (quiz.players[playerID]._name !== CurrentHost){
+            CurrentHost = quiz.players[playerID]._name;
+            break;
+        }
+        else{
+        ++choosePlayer[playerID].counter;
+        }
+    }
+}
+},1000);
 }).bindListener();
 
 function sendChatMessage(message) {
@@ -181,6 +216,19 @@ let roomsizetest = [];
     }
     console.log("roomsize = " + roomsize + " new is: " + roomsizetest[roomsizetest.length-1]); //debug
     return roomsizetest[roomsizetest.length-1];
+}
+
+function ChooseRandomPlayer(PassedPlayer) {
+    let array1 = [];
+    for (let playerID in lobby.players) {
+    array1.push(choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter);
+    }
+    let min = math.min(array1);
+    let array2 = [];
+    for (let playerID in lobby.players) {
+    if (choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter == min && choosePlayer[playerID]._name !== PassedPlayer) array2.push(choosePlayer[PlayerID]._name);
+    }
+     sendChatMessage("Please pass host to: " + array2[Math.floor(Math.random() * array2.length)] + ", who will be drawing next round.")
 }
 
 commandListener.bindListener();
