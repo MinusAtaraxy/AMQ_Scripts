@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.5.8 beta
+// @version      1.5.9 beta
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -55,12 +55,14 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 console.log(payload.sender + "is host");
             }
             break;
-//         case "/debug":
-//             if(payload.sender === selfName || payload.sender === "Ataraxia"){
+        case "/debug":
+            if(payload.sender === selfName || payload.sender === "Ataraxia"){
 //                 let temp = getSizeofPlayers();
 //             console.log("roomsize = " + roomsize + " but is " + temp);
-//             }
-//             break;
+                if (args[1] == "initialize") initializechoosePlayers();
+                console.log(choosePlayer);
+            }
+            break;
         case "/choose":
             ChooseRandomPlayer();
             break;
@@ -68,7 +70,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
             for (let playerID in lobby.players) {
             if (lobby.players[playerID]._host) {
                 if (payload.sender == lobby.players[playerID]._name){
-                    choosePlayer[playerID].passcounter += 2;
+                    choosePlayer[playerID].passcounter += 1;
                     break;
                 }
             }
@@ -126,7 +128,7 @@ new Listener("Spectator Change To Player", function(){
 
 let hostPromotionListner = new Listener("Host Promotion", (payload) => {
     //debug
-    console.log("host change");
+    console.log("host change from " + CurrentHost);
     setTimeout(() => {
 	if (lobby.isHost) {
         for (let playerID in lobby.players) {
@@ -148,7 +150,10 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
         //if it works...-_-
         for (let playerID in lobby.players) {
             if (lobby.players[playerID]._host) CurrentHost = lobby.players[playerID]._name;
+            break;
         }
+        //debug
+        console.log(" to " + CurrentHost);
     }
 }).bindListener();
 
@@ -157,13 +162,8 @@ let joinLobbyListener = new Listener("Join Game", (payload) => {
         roomsize = getSizeofPlayers();
         //console.log("on join: " + roomsize); //debug
 
-        //Initialize
-        for (let playerID in lobby.players){
-            choosePlayer[playerID] = {};
-            choosePlayer[playerID]._name = lobby.players[playerID]._name;
-            if (choosePlayer[playerID].hostcounter == undefined) choosePlayer[playerID].hostcounter = 0;
-            if (choosePlayer[playerID].passcounter == undefined) choosePlayer[playerID].passcounter = 0;
-        }
+       initializechoosePlayers();
+
     },100);
     roomsize = 0;
     StepHostisStuck = true;
@@ -191,11 +191,11 @@ for (let playerID in quiz.players){
             break;
         }
         else{
-        ++choosePlayer[playerID].counter;
+        choosePlayer[playerID].hostcounter += 1;
         }
     }
 }
-},1000);
+},100);
 }).bindListener();
 
 function sendChatMessage(message) {
@@ -218,17 +218,36 @@ let roomsizetest = [];
     return roomsizetest[roomsizetest.length-1];
 }
 
+function initializechoosePlayers(){
+//Initialize
+        for (let playerID in lobby.players){
+            choosePlayer[playerID] = {};
+            choosePlayer[playerID]._name = lobby.players[playerID]._name;
+            if (choosePlayer[playerID].hostcounter == undefined) choosePlayer[playerID].hostcounter = 0;
+            if (choosePlayer[playerID].passcounter == undefined) choosePlayer[playerID].passcounter = 0;
+        }
+}
+
 function ChooseRandomPlayer(PassedPlayer) {
     let array1 = [];
     for (let playerID in lobby.players) {
     array1.push(choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter);
     }
-    let min = math.min(array1);
+    console.log("chooseRandom w/o: " + PassedPlayer); //debug
+    console.log(array1); //debug
+    let min = Math.min(...array1);
     let array2 = [];
     for (let playerID in lobby.players) {
-    if (choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter == min && choosePlayer[playerID]._name !== PassedPlayer) array2.push(choosePlayer[PlayerID]._name);
+    if (choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter == min && choosePlayer[playerID]._name !== PassedPlayer) array2.push(choosePlayer[playerID]._name);
     }
-     sendChatMessage("Please pass host to: " + array2[Math.floor(Math.random() * array2.length)] + ", who will be drawing next round.")
+    if (array2 == undefined) {
+        for (let playerID in lobby.players) {
+            if (choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter > min && choosePlayer[playerID]._name !== PassedPlayer) array2.push(choosePlayer[playerID]._name);
+        }
+    }
+    console.log(array2); //debug
+    let index = Math.floor(Math.random() * array2.length);
+    sendChatMessage("Please pass host to: " + array2[index] + ", who will be drawing next round.");
 }
 
 commandListener.bindListener();
