@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.8.3
+// @version      1.8.5
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -237,6 +237,7 @@ function initializechoosePlayers(){
 }
 
 function ChooseRandomPlayer(PassedPlayer) {
+    initializechoosePlayers();
     let array1 = [];
     for (let playerID in lobby.players) {
     array1.push(choosePlayer[playerID].hostcounter + choosePlayer[playerID].passcounter);
