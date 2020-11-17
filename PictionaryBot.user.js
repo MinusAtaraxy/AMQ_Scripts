@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.5.9 beta
+// @version      1.8.1
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -9,6 +9,9 @@
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
 // @updateURL    https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/PictionaryBot.user.js
 // ==/UserScript==
+
+
+
 
 if (!window.setupDocumentDone) return;
 
@@ -68,13 +71,12 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
             break;
         case "/pass":
             for (let playerID in lobby.players) {
-            if (lobby.players[playerID]._host) {
                 if (payload.sender == lobby.players[playerID]._name){
                     choosePlayer[playerID].passcounter += 1;
                     break;
                 }
             }
-            }
+
             ChooseRandomPlayer(payload.sender);
             break;
 
@@ -107,7 +109,7 @@ new Listener("New Player", function(payload){
 }).bindListener();
 
 new Listener("New Spectator", function (payload) {
-	sendChatMessage("Welcome to Pictionary! View drawing here: https://aggie.io/" + urlLink);
+	sendChatMessage("This is a custom gamemode please read RULES: https://pastebin.com/HjSySq6e Type /link to see drawing");
 
 }).bindListener();
 
@@ -171,14 +173,15 @@ let joinLobbyListener = new Listener("Join Game", (payload) => {
 
 let quizReadyListener = new Listener("quiz ready", (data) => {
 setTimeout(() => {
-for (let playerID in quiz.players){
-    if (quiz.players[playerID]._host){
-        if (quiz.players[playerID]._name !== CurrentHost){
-            CurrentHost = quiz.players[playerID]._name;
-            break;
+    for (let playerID in quiz.players){
+        if (quiz.players[playerID]._host){
+            if (quiz.players[playerID]._name !== CurrentHost){
+                CurrentHost = quiz.players[playerID]._name;
+                break;
+            }
         }
     }
-}
+sendChatMessage("view drawing here: https://aggie.io/" + urlLink);
 },1000);
 }).bindListener();
 
@@ -247,7 +250,7 @@ function ChooseRandomPlayer(PassedPlayer) {
     }
     console.log(array2); //debug
     let index = Math.floor(Math.random() * array2.length);
-    sendChatMessage("Please pass host to: " + array2[index] + ", who will be drawing next round.");
+    sendChatMessage("Please pass host to: " + array2[index] + ", who will be drawing this round.");
 }
 
 commandListener.bindListener();
