@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.8.5
+// @version      1.8.6
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -155,10 +155,15 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
         clearInterval(hostremind);
         StepHostisStuck = true;
         //if it works...-_-
+        setTimeout(() => {
         for (let playerID in lobby.players) {
-            if (lobby.players[playerID]._host) CurrentHost = lobby.players[playerID]._name;
-            break;
+            if (lobby.players[playerID]._host)
+            {
+                CurrentHost = lobby.players[playerID]._name;
+                break;
+            }
         }
+            }, 10);
         //debug
         console.log(" to " + CurrentHost);
     }
