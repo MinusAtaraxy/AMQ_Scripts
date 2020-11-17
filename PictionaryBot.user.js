@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.8.1
+// @version      1.8.3
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -24,6 +24,7 @@ let roomsize = 0;
 let CurrentHost = "";
 let StepHostisStuck = true; //UwU what are you doing step-host?
 var choosePlayer = []
+let chosenPlayer
 
 
 let commandListener = new Listener("Game Chat Message", (payload) => {
@@ -67,9 +68,12 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
             }
             break;
         case "/choose":
-            ChooseRandomPlayer();
+            if (payload.sender == CurrentHost){
+            chosenPlayer = ChooseRandomPlayer();
+            }
             break;
         case "/pass":
+            if (payload.sender == chosenPlayer){
             for (let playerID in lobby.players) {
                 if (payload.sender == lobby.players[playerID]._name){
                     choosePlayer[playerID].passcounter += 1;
@@ -77,7 +81,8 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 }
             }
 
-            ChooseRandomPlayer(payload.sender);
+                chosenPlayer = ChooseRandomPlayer(payload.sender);
+            }
             break;
 
 //case "/":
@@ -109,7 +114,7 @@ new Listener("New Player", function(payload){
 }).bindListener();
 
 new Listener("New Spectator", function (payload) {
-	sendChatMessage("This is a custom gamemode please read RULES: https://pastebin.com/HjSySq6e Type /link to see drawing");
+	sendChatMessage("This is a custom gamemode. Type /link to see drawing. PLEASE READ RULES: https://pastebin.com/HjSySq6e");
 
 }).bindListener();
 
@@ -117,7 +122,7 @@ new Listener("Spectator Change To Player", function(){
         setTimeout(() => {
     let newroomsize = getSizeofPlayers();
     if (newroomsize > roomsize){
-    setTimeout(sendChatMessage("Don't forget to turn off list and sound ;)"), 10000);
+    setTimeout(sendChatMessage("Don't forget to turn off list and sound ;)"), 10);
         //create roblox account
         choosePlayer[newroomsize] = {};
             choosePlayer[newroomsize]._name = lobby.players[newroomsize]._name;
@@ -181,7 +186,7 @@ setTimeout(() => {
             }
         }
     }
-sendChatMessage("view drawing here: https://aggie.io/" + urlLink);
+sendChatMessage("View drawing here: https://aggie.io/" + urlLink);
 },1000);
 }).bindListener();
 
@@ -251,6 +256,7 @@ function ChooseRandomPlayer(PassedPlayer) {
     console.log(array2); //debug
     let index = Math.floor(Math.random() * array2.length);
     sendChatMessage("Please pass host to: " + array2[index] + ", who will be drawing this round.");
+    return array2[index];
 }
 
 commandListener.bindListener();
