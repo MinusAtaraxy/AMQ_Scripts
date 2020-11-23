@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9 - NEW
+// @version      1.9.1 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -27,11 +27,10 @@ if (document.getElementById('startPage')) {
 }
 
 
-//initialize
+//initialize variables
 let urlLink = "_virett0a_";
 let CurrentHost = "";
 let roomsize = 0;
-let HostisStuck = true;
 var PlayerQueue = []
 
 //commands + chat
@@ -96,7 +95,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
         }
 
     }
-    //if not a command: search in chat for key words ie "how to remove list" (may take lots of resources)
+    //not a command: search in chat for key words ie "how to remove list" (may take lots of resources)
     else if (payload.message.search(/list/i)!==-1 && (payload.message.search(/remove/i) !==-1 || payload.message.search(/delete/i) !==-1 || payload.message.search(/disable/i) !==-1) && payload.message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
@@ -174,7 +173,7 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
         //record host change for future reasons
         //if bot becomes host then panik
 
-        while (lobby.isHost) {
+        if (lobby.isHost) {
             for (let playerID in lobby.players) {
                 if (lobby.players[playerID]._name !== selfName) {
                     lobby.promoteHost(lobby.players[playerID]._name);
@@ -261,9 +260,16 @@ function getHostChange() {
 function initializePlayers(){
     //Initialize
     roomsize = getSizeofPlayers();
-    for (let playerID in lobby.players){
-        PlayerQueue[playerID] = {};
-        PlayerQueue[playerID]._name = lobby.players[playerID]._name;
+    if (lobby.inLobby) {
+        for (let playerID in lobby.players){
+            PlayerQueue[playerID] = {};
+            PlayerQueue[playerID]._name = lobby.players[playerID]._name;
+        }
+    }else {
+        for (let playerID in quiz.players){
+            PlayerQueue[playerID] = {};
+            PlayerQueue[playerID]._name = quiz.players[playerID]._name;
+        }
     }
 }
 
