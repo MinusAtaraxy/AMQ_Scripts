@@ -34,6 +34,7 @@ let roomsize = 0;
 var PlayerQueue = []
 let currentQueuePlace
 
+
 //commands + chat
 let commandListener = new Listener("Game Chat Message", (payload) => {
     //link, rules, queue, list commands
@@ -82,6 +83,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 if(inLobby){
                     currentQueuePlace = PlayerQueue.shift()
                     sendChatMessage("Player " + currentQueuePlace + " skipped.");
+
                 }
                 break;
 
@@ -103,6 +105,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
 
             default: //do nothing
         }
+
 
     }
     //not a command: search in chat for key words ie "how to remove list" (may take lots of resources)
@@ -158,6 +161,7 @@ new Listener("New Spectator", function (payload) {
         }
         //debug//
 
+
     },1);
 }).bindListener();
 
@@ -195,6 +199,7 @@ let hostPromotionListner = new Listener("Host Promotion", (payload) => {
 
         getHostChange();
         //add autopicker?
+
 
 
     },1);
@@ -290,6 +295,7 @@ function initializePlayers(){
     }
 }
 
+
 function getSizeofPlayers() {
     let roomsizetest = [];
     if (lobby.inLobby){
@@ -301,6 +307,7 @@ function getSizeofPlayers() {
             roomsizetest.push(playerID)
         }
     }
+
     console.log("roomsize = " + roomsize + " new is: " + roomsizetest[roomsizetest.length-1]); //debug
     return roomsizetest[roomsizetest.length-1];
 }
