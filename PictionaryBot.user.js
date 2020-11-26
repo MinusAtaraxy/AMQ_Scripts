@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.4 - NEW
+// @version      1.9.5 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -33,7 +33,7 @@ let urlLink = "_virett0a_";
 let CurrentHost = "";
 let roomsize = 0;
 var PlayerQueue = []
-let currentQueuePlace
+let tempthing = "temp_placeholder"
 
 //commands + chat
 let commandListener = new Listener("Game Chat Message", (payload) => {
@@ -74,16 +74,24 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 //edits current link (just in case)
             case "/queue":
                 //adds current player to queue
-                if (isQueueOn && checkQueue()){
-                    currentQueuePlace = PlayerQueue.push(payload.sender);
-                    sendChatMessage("you are " + currentQueuePlace + " in line.");
+                if (isQueueOn){
+                    if (args[1] == undefined){
+                        tempthing = checkQueue()
+                        if (tempthing){
+                            tempthing = PlayerQueue.push(payload.sender);
+                            sendChatMessage("you are " + tempthing + " in line.");
+                        }
+                    }
+                    else{
+                        if (args[1] == "toggle")isQueueOn = !isQueueOn;
+                    }
                 }
                 break;
             case "/skip":
                 //skips current queued player
                 if(inLobby && isQueueOn){
-                    currentQueuePlace = PlayerQueue.shift()
-                    sendChatMessage("Player " + currentQueuePlace + " skipped.");
+                    tempthing = PlayerQueue.shift()
+                    sendChatMessage("Player " + tempthing + " skipped.");
                 }
                 break;
 
@@ -241,8 +249,8 @@ let quizOverListener = new Listener("quiz over", (data) => {
         //"Please pass host to the next drawer" + queue?
         //dont forget to remove list
         if (PlayerQueue.length > 1 && isQueueOn){
-            currentQueuePlace = PlayerQueue.shift();
-            sendChatMessage("Please past host to the next drawer: " + currentQueuePlace + ". Dont forget to remove your list again.");
+            tempthing = PlayerQueue.shift();
+            sendChatMessage("Please past host to the next drawer: " + tempthing + ". Dont forget to remove your list again.");
         }
         if (Object.values(quiz.players).length > 4 && isQueueOn) sendChatMessage("You can type /queue to reserve a spot");
     },1);
