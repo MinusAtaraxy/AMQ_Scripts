@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.1 - NEW
+// @version      1.9.3 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -32,6 +32,7 @@ let urlLink = "_virett0a_";
 let CurrentHost = "";
 let roomsize = 0;
 var PlayerQueue = []
+let currentQueuePlace
 
 //commands + chat
 let commandListener = new Listener("Game Chat Message", (payload) => {
@@ -72,14 +73,23 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 //edits current link (just in case)
             case "/queue":
                 //adds current player to queue
+                currentQueuePlace = PlayerQueue.push(payload.sender);
+                sendChatMessage("you are " + currentQueuePlace + " in line.");
 
+                break;
+            case "/skip":
+                //skips current queued player
+                if(inLobby){
+                    currentQueuePlace = PlayerQueue.shift()
+                    sendChatMessage("Player " + currentQueuePlace + " skipped.");
+                }
                 break;
 
 
                 /////////DEBUG STUFF///////////////
                 //just in case bot becomes host
             case "/host":
-                if (lobby.isHost) {
+                if (lobby.isHost || quiz.isHost) {
                     lobby.promoteHost(payload.sender);
                 }
                 break;
@@ -168,6 +178,7 @@ new Listener("Spectator Change To Player", function(){
     },1);
 }).bindListener();
 
+//change of host
 let hostPromotionListner = new Listener("Host Promotion", (payload) => {
     setTimeout(() => {
         //record host change for future reasons
@@ -227,12 +238,18 @@ let quizOverListener = new Listener("quiz over", (data) => {
     setTimeout(() => {
         //"Please pass host to the next drawer" + queue?
         //dont forget to remove list
+        if (PlayerQueue.length > 1){
+            currentQueuePlace = PlayerQueue.shift();
+            sendChatMessage("Please past host to the next drawer: " + currentQueuePlace + ". Dont forget to remove your list again.")
+        }
 
-        sendChatMessage("Please past host to the next drawer: " + "queue_placeholder_name" + ". Dont forget to remove your list again.")
-
-    },15000);
+    },1);
 }).bindListener();
 
+//after every song get the results
+let answerResultsListener = new Listener("answer results", (result) => {
+    console.log(result);
+}).bindListener();
 
 /////functions/////
 
