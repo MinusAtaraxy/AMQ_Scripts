@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.5 - NEW
+// @version      1.9.6 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -74,18 +74,20 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 //edits current link (just in case)
             case "/queue":
                 //adds current player to queue
-                if (isQueueOn){
-                    if (args[1] == undefined){
+
+                if (args[1] == undefined){
+                    if (isQueueOn){
                         tempthing = checkQueue()
                         if (tempthing){
                             tempthing = PlayerQueue.push(payload.sender);
                             sendChatMessage("you are " + tempthing + " in line.");
                         }
                     }
-                    else{
-                        if (args[1] == "toggle")isQueueOn = !isQueueOn;
-                    }
                 }
+                else{
+                    if (args[1] == "toggle")isQueueOn = !isQueueOn;
+                }
+
                 break;
             case "/skip":
                 //skips current queued player
@@ -302,6 +304,7 @@ function initializePlayers(){
     }
 }
 
+//***replace with Object.values(something)
 function getSizeofPlayers() {
     let roomsizetest = [];
     if (lobby.inLobby){
