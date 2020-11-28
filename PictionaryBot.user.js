@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.6 - NEW
+// @version      1.9.8 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -86,6 +86,8 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
                 }
                 else{
                     if (args[1] == "toggle")isQueueOn = !isQueueOn;
+                    if (isQueueOn) sendChatMessage("Queueing enabled: type /queue to queue up in a queue");
+                    if (!isQueueOn) sendChatMessage("Queueing disabled");
                 }
 
                 break;
@@ -108,7 +110,15 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
             case "/reset":
                 if (payload.sender == "Ataraxia" || payload.sender == selfName){
                     if (lobby.isHost) {
-                        initializePlayers();
+                        roomsize = getSizeofPlayers();
+                        PlayerQueue = [];
+
+                        if (lobby.inLobby) {
+                            //current host
+                            getHostChange();
+
+                            //queue player list probably
+                        }
                     }
                 }
                 break;
@@ -254,7 +264,9 @@ let quizOverListener = new Listener("quiz over", (data) => {
             tempthing = PlayerQueue.shift();
             sendChatMessage("Please past host to the next drawer: " + tempthing + ". Dont forget to remove your list again.");
         }
-        if (Object.values(quiz.players).length > 4 && isQueueOn) sendChatMessage("You can type /queue to reserve a spot");
+        tempthing = Object.values(quiz.players).length
+        if (tempthing   > 4 && isQueueOn) sendChatMessage("You can type /queue to reserve a spot");
+
     },1);
 }).bindListener();
 
@@ -288,36 +300,18 @@ function getHostChange() {
     }
 }
 
-function initializePlayers(){
-    //Initialize
-    roomsize = getSizeofPlayers();
-    if (lobby.inLobby) {
-        for (let playerID in lobby.players){
-            PlayerQueue[playerID] = {};
-            PlayerQueue[playerID]._name = lobby.players[playerID]._name;
-        }
-    }else {
-        for (let playerID in quiz.players){
-            PlayerQueue[playerID] = {};
-            PlayerQueue[playerID]._name = quiz.players[playerID]._name;
-        }
-    }
-}
 
 //***replace with Object.values(something)
 function getSizeofPlayers() {
-    let roomsizetest = [];
+
     if (lobby.inLobby){
-        for (let playerID in lobby.players) {
-            roomsizetest.push(playerID)
-        }}
-    else {
-        for (let playerID in quiz.players) {
-            roomsizetest.push(playerID)
+        return Object.values(lobby.players)[Object.values(lobby.players).length-1].gamePlayerId;
         }
+    else {
+        return Object.values(quiz.players)[Object.values(quiz.players).length-1].gamePlayerId;
     }
-    console.log("roomsize = " + roomsize + " new is: " + roomsizetest[roomsizetest.length-1]); //debug
-    return roomsizetest[roomsizetest.length-1];
+
+
 }
 
 function checkQueue(name) {
