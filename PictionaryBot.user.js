@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.8 - NEW
+// @version      1.9.9 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -36,11 +36,11 @@ var PlayerQueue = []
 let tempthing = "temp_placeholder"
 
 //commands + chat
-let commandListener = new Listener("Game Chat Message", (payload) => {
+let commandListener = new Listener("game chat update", (payload) => {
     //link, rules, queue, list commands
-    if (payload.message.startsWith("/")) {
+    if (payload.messages[0].message.startsWith("/")) {
         //split command + arguments
-        let args = payload.message.split(/\s+/);
+        let args = payload.messages[0].message.split(/\s+/);
 
         //switch statement for different commands
         switch(args[0].toLowerCase()){
@@ -128,7 +128,7 @@ let commandListener = new Listener("Game Chat Message", (payload) => {
 
     }
     //not a command: search in chat for key words ie "how to remove list" (may take lots of resources)
-    else if (payload.message.search(/list/i)!==-1 && (payload.message.search(/remove/i) !==-1 || payload.message.search(/delete/i) !==-1 || payload.message.search(/disable/i) !==-1) && payload.message.search(/how/i)!==-1) {
+    else if (payload.messages[0].message.search(/list/i)!==-1 && (payload.messages[0].message.search(/remove/i) !==-1 || payload.messages[0].message.search(/delete/i) !==-1 || payload.messages[0].message.search(/disable/i) !==-1) && payload.messages[0].message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
     //anti afk
@@ -318,10 +318,12 @@ function checkQueue(name) {
     if (lobby.inLobby){
         for (let playerID in lobby.players) {
             if (lobby.players[playerID]._name = name) return false;
+            return true;
         }}
     else {
         for (let playerID in quiz.players) {
             if (quiz.players[playerID]._name = name) return false;
+            return true;
         }
     }
 }
