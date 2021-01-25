@@ -7,6 +7,7 @@
 // @match        https://animemusicquiz.com/*
 // @grant        none
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
+// @require      https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/Common/whitelist.user.js
 // @updateURL    https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/PictionaryBot.user.js
 // ==/UserScript==
 
@@ -16,7 +17,7 @@
 - guest/new player (<20) kicker
 - list checker???
 - ping joined people
-
+- Whitelist
 */
 
 //these prevent scripts from loading before login???
