@@ -5,6 +5,8 @@ const whitelist = [
   "BoogieYop",
   "Akasami",
   "UImoetard",
-  "Wolferine"
+  "Wolferine",
+  "JSupGamer",
+  "Festa"
 
 ]
