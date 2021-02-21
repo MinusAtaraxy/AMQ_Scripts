@@ -9,4 +9,4 @@ const whitelist = [
   "JSupGamer",
   "Festa"
 
-]
+];
