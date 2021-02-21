@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.5 - Overhaul from mha
+// @version      1.9.6 - Overhaul from mha
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -152,7 +152,7 @@ new Listener("New Player", function(payload){
 
         getLevel(payload.name);
 
-        if (PlayerLevel < 20 || payload.name.startsWith("Guest-")){
+        if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience.")
         }
@@ -179,7 +179,7 @@ new Listener("New Spectator", function (payload) {
         //if guest say it's custom game mode
         //otherwise give rules/commands
         getLevel(payload.name);
-        if (PlayerLevel < 20 || payload.name.startsWith("Guest-")){
+        if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience. ")
         }
@@ -207,7 +207,7 @@ new Listener("Spectator Change To Player", function(){
         if (whitelist.includes(payload.name)) {}
         else{
             if (roomsize > oldroomsize){
-                if (PlayerLevel <20 || payload.name.startsWith("Guest-")){
+                if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
                 sendChatMessage("Hi @" + payload.name + " If you are new to AMQ you may want to find another room for a better experience. ")
                 }
                 else{
