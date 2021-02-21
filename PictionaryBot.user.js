@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.6 - Overhaul from mha
+// @version      1.9.7 - Overhaul from mha
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -20,9 +20,8 @@
 */
 
 //these prevent scripts from loading before login???
-if (!window.setupDocumentDone) return;
 
-if (document.getElementById("startPage")) return;
+//if (document.getElementById("startPage")) return;
 
 
 //initialize variables
@@ -151,8 +150,9 @@ new Listener("New Player", function(payload){
         roomsize = getSizeofPlayers();
 
         getLevel(payload.name);
+        console.log(payload.name + " is level " + PlayerLevel + " when joining room."); //debug//
 
-        if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
+        if ((PlayerLevel > 0 && PlayerLevel < 20) || payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience.")
         }
@@ -179,7 +179,8 @@ new Listener("New Spectator", function (payload) {
         //if guest say it's custom game mode
         //otherwise give rules/commands
         getLevel(payload.name);
-        if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
+        console.log(payload.name + " is level " + PlayerLevel + " when spec room."); //debug//
+        if ((PlayerLevel > 0 && PlayerLevel < 20) || payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience. ")
         }
@@ -192,7 +193,7 @@ new Listener("New Spectator", function (payload) {
             sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e and type /link to see drawing.")
             }
         }
-        //debug//
+
 
     },1);
 }).bindListener();
@@ -201,23 +202,19 @@ new Listener("New Spectator", function (payload) {
 new Listener("Spectator Change To Player", function(){
     setTimeout(() => {
         //remind to remove list and mute sound
-        getLevel(payload.name);
+
         let oldroomsize = roomsize
         roomsize = getSizeofPlayers();
-        if (whitelist.includes(payload.name)) {}
-        else{
-            if (roomsize > oldroomsize){
-                if (PlayerLevel > 0 && PlayerLevel < 20 || payload.name.startsWith("Guest-")){
-                sendChatMessage("Hi @" + payload.name + " If you are new to AMQ you may want to find another room for a better experience. ")
-                }
-                else{
-                sendChatMessage("Pelase make sure you understand the rules. Mute your sound and turn off your list please.")
-                }
-            }
-            else {
-                sendChatMessage("Remember to turn off your list and mute sound.")
-            }
+
+        if (roomsize > oldroomsize){
+
+            sendChatMessage("Pelase make sure you understand the rules. Mute your sound and turn off your list please.")
+
         }
+        else {
+            sendChatMessage("Remember to turn off your list and mute sound.")
+        }
+
 
     },1);
 }).bindListener();
@@ -299,13 +296,7 @@ let answerResultsListener = new Listener("answer results", (result) => {
 
 }).bindListener();
 
-const profileListener = new Listener("player profile", (payload) => {
 
-    PlayerLevel = parseInt(payload.level);
-
-    console.log(payload.name, payload.level); //debug
-
-}).bindListener()
 
 /////functions/////
 
@@ -326,7 +317,7 @@ function getHostChange() {
         }
     }
     else {
-        console.log("host change error");
+        console.log("host change error"); //debug
     }
 }
 
@@ -359,12 +350,24 @@ function checkQueue(name) {
 }
 
 function getLevel(name) {
+    /*
+    const profileListener = new Listener("player profile", (payload) => {
+
+        PlayerLevel = parseInt(payload.level);
+        console.log("A new profile is opened " + PlayerLevel);
+        profileListener.unbindListener()
+
+        console.log("getLevel reads " + payload.name + " as " + payload.level); //debug
+
+    })
+    profileListener.bindListener()
+
     socket.sendCommand({
                     type: 'social',
                     command: 'player profile',
                     data: {
                         name: name
                     }
-                });
+                });*/
 
 }
