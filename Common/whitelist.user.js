@@ -7,6 +7,7 @@ const whitelist = [
   "UImoetard",
   "Wolferine",
   "JSupGamer",
-  "Festa"
+  "Festa",
+  "NocZed"
 
 ];
