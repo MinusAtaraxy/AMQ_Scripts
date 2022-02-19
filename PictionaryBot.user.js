@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.9 - NEW
+// @version      1.9.9.1 - NEW
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -105,11 +105,11 @@ let commandListener = new Listener("game chat update", (payload) => {
                 //just in case bot becomes host
             case "/host":
                 if (lobby.isHost || quiz.isHost) {
-                    lobby.promoteHost(payload.sender);
+                    lobby.promoteHost(payload.messages[0].sender);
                 }
                 break;
             case "/reset":
-                if (payload.sender == "Ataraxia" || payload.sender == selfName){
+                if (payload.messages[0].sender == "Ataraxia" || payload.messages[0].sender == selfName){
                     if (lobby.isHost) {
                         roomsize = getSizeofPlayers();
                         PlayerQueue = [];
