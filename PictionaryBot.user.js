@@ -206,7 +206,7 @@ new Listener("Spectator Change To Player", function(){
         roomsize = getSizeofPlayers();
 
         if (roomsize > oldroomsize){
-            sendChatMessage("Pelase make sure you understand the rules. Mute your sound and turn off your list please.")
+            sendChatMessage("Please make sure you understand the rules. Mute your sound and turn off your list please.")
         }
         else {
             sendChatMessage("Remember to turn off your list and mute sound.")
