@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.93 - Newer
+// @version      1.9.94 - Newer
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -133,8 +133,8 @@ let commandListener = new Listener("game chat update", (payload) => {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
     //aggie tutorial?
-    else if (payload.messages[0].message.search(/drawing/i)!==-1 || payload.messages[0].message.search(/canvas/i)!==-1 && (payload.messages[0].message.search(/remove/i) !==-1 || payload.messages[0].message.search(/delete/i) !==-1 || payload.messages[0].message.search(/clear/i) !==-1) && payload.messages[0].message.search(/how/i)!==-1 || payload.messages[0].message.search(/where/i)!==-1) {
-        sendChatMessage("click this button to clear after each drawing: https://i.imgur.com/cs9dvuX.png");
+    else if ((payload.messages[0].message.search(/drawing/i)!==-1 || payload.messages[0].message.search(/all/i)!==-1 || payload.messages[0].message.search(/canvas/i)!==-1) && (payload.messages[0].message.search(/remove/i) !==-1 || payload.messages[0].message.search(/delete/i) !==-1 || payload.messages[0].message.search(/clear/i) !==-1) && (payload.messages[0].message.search(/how/i)!==-1 || payload.messages[0].message.search(/where/i)!==-1)) {
+        sendChatMessage("click this button after each drawing: https://i.imgur.com/cs9dvuX.png");
     }
     //anti afk
     document.getElementById("mainContainer").click();
