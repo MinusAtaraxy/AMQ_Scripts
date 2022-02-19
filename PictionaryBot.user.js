@@ -1,39 +1,39 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.7 - Overhaul from mha
+// @version      1.9.92 - Newer
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
 // @grant        none
-// @require      https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/Common/whitelist.user.js
+// @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
 // @updateURL    https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/PictionaryBot.user.js
 // ==/UserScript==
 
 /*TO DO
-- *QUEUE
+- ****QUEUE****
 - anti-spam
-- whitelist
+- guest/new player (<20) kicker
 - list checker???
-
+- ping joined people
 
 */
 
 //these prevent scripts from loading before login???
+if (!window.setupDocumentDone) return;
 
-//if (document.getElementById("startPage")) return;
+if (document.getElementById('startPage')) {
+    return
+}
 
 
 //initialize variables
-console.log(whitelist);
 let isQueueOn = false
 let urlLink = "_virett0a_";
 let CurrentHost = "";
 let roomsize = 0;
 var PlayerQueue = []
 let tempthing = "temp_placeholder"
-
-let PlayerLevel = -1
 
 //commands + chat
 let commandListener = new Listener("game chat update", (payload) => {
@@ -104,11 +104,11 @@ let commandListener = new Listener("game chat update", (payload) => {
                 //just in case bot becomes host
             case "/host":
                 if (lobby.isHost || quiz.isHost) {
-                    lobby.promoteHost(payload.sender);
+                    lobby.promoteHost(payload.messages[0].sender);
                 }
                 break;
             case "/reset":
-                if (payload.sender == "Ataraxia" || payload.sender == selfName){
+                if (payload.sender == "Ataraxia" || payload.messages[0].sender == selfName){
                     if (lobby.isHost) {
                         roomsize = getSizeofPlayers();
                         PlayerQueue = [];
@@ -131,6 +131,10 @@ let commandListener = new Listener("game chat update", (payload) => {
     else if (payload.messages[0].message.search(/list/i)!==-1 && (payload.messages[0].message.search(/remove/i) !==-1 || payload.messages[0].message.search(/delete/i) !==-1 || payload.messages[0].message.search(/disable/i) !==-1) && payload.messages[0].message.search(/how/i)!==-1) {
         sendChatMessage("To remove list: Settings > Anime List > Delete your username > Press 'Update'");
     }
+    //aggie tutorial?
+    else if (payload.messages[0].message.search(/drawing/i)!==-1 || payload.messages[0].message.search(/canvas/i)!==-1 && (payload.messages[0].message.search(/remove/i) !==-1 || payload.messages[0].message.search(/delete/i) !==-1 || payload.messages[0].message.search(/clear/i) !==-1) && payload.messages[0].message.search(/how/i)!==-1 || payload.messages[0].message.search(/where/i)!==-1) {
+        sendChatMessage("click this button to clear after each drawing: https://i.imgur.com/cs9dvuX.png");
+    }
     //anti afk
     document.getElementById("mainContainer").click();
 
@@ -149,21 +153,13 @@ new Listener("New Player", function(payload){
         let oldroomsize = roomsize
         roomsize = getSizeofPlayers();
 
-        getLevel(payload.name);
-        console.log(payload.name + " is level " + PlayerLevel + " when joining room."); //debug//
-
-        if ((PlayerLevel > 0 && PlayerLevel < 20) || payload.name.startsWith("Guest-")){
+        if (payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience.")
         }
         else {
-            //not guest & whitelist
-            if (whitelist.includes(payload.name)) {
-                //do nothing
-            }
-            else{
-                sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e")
-            }
+            //not guest
+            sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e")
         }
 
         roomsize = getSizeofPlayers();
@@ -178,22 +174,15 @@ new Listener("New Spectator", function (payload) {
         //payload.name, payload.gamePlayerId
         //if guest say it's custom game mode
         //otherwise give rules/commands
-        getLevel(payload.name);
-        console.log(payload.name + " is level " + PlayerLevel + " when spec room."); //debug//
-        if ((PlayerLevel > 0 && PlayerLevel < 20) || payload.name.startsWith("Guest-")){
+        if (payload.name.startsWith("Guest-")){
             //guests go away
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience. ")
         }
         else {
             //not guest
-            if (whitelist.includes(payload.name)) {
-            //nothing
-            }
-            else{
             sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e and type /link to see drawing.")
-            }
         }
-
+        //debug//
 
     },1);
 }).bindListener();
@@ -202,19 +191,15 @@ new Listener("New Spectator", function (payload) {
 new Listener("Spectator Change To Player", function(){
     setTimeout(() => {
         //remind to remove list and mute sound
-
         let oldroomsize = roomsize
         roomsize = getSizeofPlayers();
 
         if (roomsize > oldroomsize){
-
             sendChatMessage("Pelase make sure you understand the rules. Mute your sound and turn off your list please.")
-
         }
         else {
             sendChatMessage("Remember to turn off your list and mute sound.")
         }
-
 
     },1);
 }).bindListener();
@@ -296,8 +281,6 @@ let answerResultsListener = new Listener("answer results", (result) => {
 
 }).bindListener();
 
-
-
 /////functions/////
 
 //send a message in chat
@@ -317,7 +300,7 @@ function getHostChange() {
         }
     }
     else {
-        console.log("host change error"); //debug
+        console.log("host change error");
     }
 }
 
@@ -347,27 +330,4 @@ function checkQueue(name) {
             return true;
         }
     }
-}
-
-function getLevel(name) {
-    /*
-    const profileListener = new Listener("player profile", (payload) => {
-
-        PlayerLevel = parseInt(payload.level);
-        console.log("A new profile is opened " + PlayerLevel);
-        profileListener.unbindListener()
-
-        console.log("getLevel reads " + payload.name + " as " + payload.level); //debug
-
-    })
-    profileListener.bindListener()
-
-    socket.sendCommand({
-                    type: 'social',
-                    command: 'player profile',
-                    data: {
-                        name: name
-                    }
-                });*/
-
 }
