@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         AMQ BOT - Pictionary
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      1.9.92 - Newer
+// @version      1.9.93 - Newer
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
 // @grant        none
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
+// @require      https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/Common/whitelist.user.js
 // @updateURL    https://github.com/MinusAtaraxy/AMQ_Scripts/raw/master/PictionaryBot.user.js
 // ==/UserScript==
 
@@ -159,7 +160,12 @@ new Listener("New Player", function(payload){
         }
         else {
             //not guest
+             if (whitelist.includes(payload.name)) {
+            //nothing
+            }
+            else{
             sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e")
+            }
         }
 
         roomsize = getSizeofPlayers();
@@ -179,8 +185,13 @@ new Listener("New Spectator", function (payload) {
             sendChatMessage("Hi @" + payload.name + " this is a custom game, if you're new to AMQ please leave and find another room for a better experience. ")
         }
         else {
+             if (whitelist.includes(payload.name)) {
+            //nothing
+            }
+            else{
             //not guest
             sendChatMessage("Welcome @" + payload.name + " This is a custom gamemode. PLEASE READ RULES: https://pastebin.com/HjSySq6e and type /link to see drawing.")
+            }
         }
         //debug//
 
