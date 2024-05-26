@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ BOT - idk
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      0.0.2
+// @version      0.0.3
 // @description  auto say rules/instuctions/links for the custom game pictionary
 // @author       Ataraxy
 // @match        https://animemusicquiz.com/*
@@ -133,10 +133,17 @@ let quizOverListener = new Listener("quiz over", (data) => {
     setTimeout(() => {
         //"Please pass host to the next drawer" + queue?
         //dont forget to remove list
-        callChatGPTAPI("encourage everyone that enjoyed a great game and had fun, encourage artists of their amazing art")
+        callChatGPTAPI("please tell everyone that enjoyed a great game and had fun, encourage artists of their amazing art")
 
     },1);
 }).bindListener();
+
+ let answerResultsRigTracker = new Listener("answer results", (result) => {
+        if (quiz.gameMode === "Ranked") {
+            return;
+        }
+        callChatGPTAPI("pretend you can see the drawing, give some constructive feedback on what the drawing should be to hint the anime next time, the answer this round was the anime : " + result.songInfo.animeNames.english)
+ }).bindListener();;
 
 function getSizeofPlayers() {
 
@@ -155,8 +162,8 @@ function processChatCommand(payload) {
 
     //    console.log(payload);
     //    gameChat.systemMessage("ok")
-    if (payload.sender !== selfName){
-        callChatGPTAPI(payload.sender + ": " + payload.message);
+    if (payload.sender !== selfName && payload.message.includes("?")){
+        callChatGPTAPI("user " + payload.sender + " asks: " + payload.message);
     }
 
 }
@@ -183,7 +190,7 @@ async function callChatGPTAPI(prompt) {
             messages: [
                 {
                     role: "assisstant",
-                    content: `The AI is in charge of moderating the chat consisting of multiple users. This chatroom was created so the users can play a game of pictionary, messages will start with the username of the current person talking. There is a 300 character limit in your response. The AI must provide the following information when asked: The url to play the game is at "https://magma.com/d/12MP66p5kG". The rules of the game must be followed as such: "1. turn off your list", "2. mute your sound", "3. guess the anime using drawings only".`
+                    content: `The AI is in a chat consisting of multiple users, the AI is here to answer questions. This chat room was created so the users can play a game of pictionary, messages will be labeled with the name of the current person who is asking a question. The AI must provide the following information when asked: The game is located at this url "https://magma.com/d/12MP66p5kG". The rules of the game must be followed as such: "1. turn off your list", "2. mute your sound", "3. guess the anime using drawings only".`
       },
             {
                 role: "user",
