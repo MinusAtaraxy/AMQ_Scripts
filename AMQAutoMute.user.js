@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         AMQ Auto Mute
 // @namespace    https://github.com/MinusAtaraxy/AMQ_Scripts
-// @version      0.0000001
-// @description  auto mute for pictionary :walking:
+// @version      0.0000002
+// @description  auto mute for pictionary and image ref
 // @author       Ataraxia
 // @match        https://animemusicquiz.com/*
 // @grant        none
@@ -10,13 +10,18 @@
 // @require      https://gist.githubusercontent.com/arantius/3123124/raw/grant-none-shim.js
 
 // ==/UserScript==
-   if (document.getElementById('startPage')) {
-        return
-    }
+if (typeof Listener === "undefined") return;
 
 let ismute = false;
 
 let lastvolume = "0.5";
+
+let imageLink = []
+for(let i = 0; i < 4; i++){
+    imageLink[i] = document.createElement('a')
+    imageLink[i].target = '_blank'
+    imageLink[i].className = "removeMe"
+}
 
 (function() {
 
@@ -43,15 +48,16 @@ let lastvolume = "0.5";
 
 
 
-let commandListener = new Listener("Game Chat Message", (payload) => {
-    if (payload.sender === selfName && payload.message.startsWith("/unmute")) {
-        ismute = false;
-    }
-    else if (payload.sender === selfName && payload.message.startsWith("/mute")) {
-        ismute = true;
-    }
+// let commandListener = new Listener("Game Chat Message", (payload) => {
+//     if (payload.sender === selfName && payload.message.startsWith("/unmute")) {
+//         ismute = false;
+//     }
+//     else if (payload.sender === selfName && payload.message.startsWith("/mute")) {
+//         ismute = true;
+//     }
 
-}).bindListener();
+// }).bindListener();
+
 
 let answerResultsListener = new Listener("answer results", (result) => {
      if (ismute && !quiz.isHost) {
@@ -62,6 +68,10 @@ let answerResultsListener = new Listener("answer results", (result) => {
 let playNextSongListener = new Listener("play next song", payload => {
     if (ismute && !quiz.isHost) {
         setTimeout(() => { MuteSound(); }, 1);
+    }
+        if (ismute && quiz.isHost) {
+            setTimeout(() => { toggleImageLinks(); }, 1);
+
     }
 }).bindListener();
 
@@ -79,6 +89,17 @@ function UnmuteSound(){
 function toggleAutomute(){
 ismute = !ismute;
 }
+
+function toggleImageLinks(){
+            for(let i = 0; i < 4; i++){
+            let formattedQuery = $(".qpMultipleChoiceEntryText")[i].innerHTML
+            imageLink[i].href = `https://www.google.com/search?tbm=isch&q=${formattedQuery}`
+            imageLink[i].textContent = formattedQuery
+            $(".qpMultipleChoiceEntryText")[i].parentNode.insertBefore(imageLink[i], $(".qpMultipleChoiceEntryText")[i])
+            }
+}
+
+
 GM_addStyle(`
 
 #qpAutoMuteContainer{
