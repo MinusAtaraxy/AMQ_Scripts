@@ -73,6 +73,11 @@ let playNextSongListener = new Listener("play next song", payload => {
             setTimeout(() => { toggleImageLinks(); }, 1);
 
     }
+	    if(!ismute){
+     for(let i = 0; i < 4; i++){
+         $(".removeMe")[0].parentNode.removeChild($(".removeMe")[0])
+     }
+    }
 }).bindListener();
 
 function MuteSound(){
