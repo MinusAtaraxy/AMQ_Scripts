@@ -32,7 +32,7 @@ let defaultOpacity = 0.5;
 //"https://w.wallhaven.cc/full/4l/wallhaven-4lrzlq.png","https://w.wallhaven.cc/full/ey/wallhaven-eyjglo.png",
 let options = {
 	images: [
-        "https://images2.alphacoders.com/133/1332250.png",
+        "https://i.redd.it/keou7cp2gqpb1.png",
         "https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
 		"https://w.wallhaven.cc/full/96/wallhaven-96w8e8.png",
         "https://w.wallhaven.cc/full/4l/wallhaven-4lrzlq.png",
